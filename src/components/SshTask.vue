@@ -1,5 +1,6 @@
 <script setup>
-import { getSshTasks } from '../api/sshTask';
+import { message } from 'ant-design-vue';
+import { getSshTasks, addSshTask, deleteSshTask } from '../api/sshTask';
 import { ref, reactive } from 'vue';
 
 const columns = [
@@ -38,7 +39,23 @@ async function getSshTasksData() {
 
 }
 
-const onSelectChange = selectedRowKeys => {
+async function copySshTask(recordItem) {
+    const dataSent = {
+        ...recordItem
+    }
+    delete dataSent.id
+    await addSshTask(dataSent)
+    message.success("copy success")
+    getSshTasksData()
+}
+
+async function deleteTask(record) {
+    await deleteSshTask(record.id)
+    message.success('delete success')
+    getSshTasksData()
+}
+
+function onSelectChange(selectedRowKeys) {
   console.log('selectedRowKeys changed: ', selectedRowKeys);
   state.selectedRowKeys = selectedRowKeys;
 }
@@ -59,12 +76,14 @@ getSshTasksData()
                 :columns="columns"
                 :data-source="tableData"
             >
-                <template #bodyCell="{ column }">
+                <template #bodyCell="{ column, record }">
                     <template v-if="column.key === 'action'">
                         <span>
-                            <a>Copy</a>
+                            <a @click="copySshTask(record)">Copy</a>
                             <a-divider type="vertical" />
-                            <a class="delete">Delete</a>
+                            <a>Run Task</a>
+                            <a-divider type="vertical" />
+                            <a @click="deleteTask(record)" class="delete">Delete</a>
                         </span>
                     </template>
                 </template>

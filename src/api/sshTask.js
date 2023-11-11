@@ -13,3 +13,18 @@ export async function getSshTasks() {
         method: 'get',
     })
 }
+
+export async function addSshTask(data) {
+    return request.request({
+        url: `v1/sshtask`,
+        method: 'post',
+        data
+    })
+}
+
+export async function deleteSshTask(id) {
+    return request.request({
+        url: `v1/sshtask/${id}`,
+        method: 'delete',
+    })
+}
