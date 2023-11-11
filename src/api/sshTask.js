@@ -28,3 +28,10 @@ export async function deleteSshTask(id) {
         method: 'delete',
     })
 }
+
+export async function getSwitchBrand() {
+    return request.request({
+        url: `v1/switchBrand`,
+        method: 'get',
+    })
+}

@@ -13,7 +13,7 @@ export const request = axios.create(
 
 request.interceptors.request.use((config) => {
     config.headers['content-type'] = 'application/json'
-    message.success('request sent')
+    // message.success('request sent')
     return config
 }, (err) => {
     message.error('request failed')
@@ -27,8 +27,15 @@ request.interceptors.response.use((response) => {
         if (jsonData.code && jsonData.code !== 200) {
             message.error(jsonData.msg)
         }
+
+        if (Array.isArray(response.data)) {
+            return {
+                data: response.data,
+                code: 200
+            }
+        }
     }
-    return response
+    return response.data
 }, (err) => {
     console.log(err)
     message.error('Network Error')
