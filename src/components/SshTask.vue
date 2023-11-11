@@ -1,7 +1,19 @@
 <script setup>
 import { message } from 'ant-design-vue';
 import { getSshTasks, addSshTask, deleteSshTask, getSwitchBrand, runSshTask, isDownloadFileExist, downloadCmdResult } from '../api/sshTask';
-import { ref, reactive } from 'vue';
+import { addGroup, getGroupName, addGroupTask } from '../api/groupTask'
+import { ref, reactive } from 'vue'
+
+const addTaskToGroup = reactive({
+    open: false,
+    options: [],
+    value: ''
+})
+
+const addGroupOpen = ref(false)
+const addGroupForm = reactive({
+    name: ''
+})
 
 const addOpen = ref(false)
 
@@ -121,14 +133,54 @@ async function runCmdAndDownload(record) {
     }, 5000)
 }
 
+async function submitGroupName() {
+    await addGroup({
+        ...addGroupForm
+    })
+    addGroupForm.name = ''
+    addGroupOpen.value = false
+    message.success('add group success')
+}
+
+async function openGroup2TaskDrawer() {
+    const jsonData = await getGroupName()
+    addTaskToGroup.options = jsonData
+    addTaskToGroup.open = true
+}
+
+async function submitAddTask2Group() {
+    const groupId = addTaskToGroup.value
+    if (!groupId) {
+        message.error('no group id')
+        return
+    }
+    const taskIds = state.selectedRowKeys.slice()
+
+    if (taskIds.length === 0) {
+        message.error('no task id')
+        return
+    }
+    const promises = []
+    taskIds.forEach(item => {
+        promises.push(addGroupTask({
+            groupId,
+            "taskId": item
+        }))
+    })
+    Promise.all(promises).then(() => {
+        message.success('submit success')
+        addTaskToGroup.open = false
+    })
+}
+
 getSshTasksData()
 </script>
 <template>
     <div class="ssh-task">
         <div class="buttons">
             <a-button @click="openAddDrawer" type="primary">Create Ssh Task</a-button>
-            <a-button style="background-color: green;" type="primary">Create Group</a-button>
-            <a-button style="background-color: yellowgreen;" type="primary">Add Group</a-button>
+            <a-button @click="addGroupOpen = true" style="background-color: green;" type="primary">Create Group</a-button>
+            <a-button @click="openGroup2TaskDrawer" style="background-color: yellowgreen;" type="primary">Add SSH Task to Group</a-button>
         </div>
         <div class="table">
             <a-table
@@ -150,10 +202,10 @@ getSshTasksData()
                 </template>
             </a-table>
         </div>
+        <!--add task drawer-->
         <div class="add-drawer">
             <a-drawer
                 v-model:open="addOpen"
-                style="color: red"
                 title="Add SSH Task"
                 placement="right"
                 size="large"
@@ -195,6 +247,51 @@ getSshTasksData()
                     </div>
                     <div>
                         <a-button @click="submitSSHTask" type="primary">Submit</a-button>
+                    </div>
+                </div>
+            </a-drawer>
+        </div>
+        <!--add-group-drawer-->
+        <div class="add-group-drawer">
+            <a-drawer
+                v-model:open="addGroupOpen"
+                title="Add SSH Task"
+                placement="right"
+                size="large"
+                @close="()=> addGroupOpen = false"
+            >
+                <div class="add-form">
+                    <div class="add-item">
+                        <span>Name:</span>
+                        <a-input class="add-input" v-model:value="addGroupForm.name" placeholder="input group name" />
+                    </div>
+                    <div>
+                        <a-button @click="submitGroupName" type="primary">Submit</a-button>
+                    </div>
+                </div>
+            </a-drawer>
+        </div>
+        <!--addTask2group-drawer-->
+        <div class="add-group-drawer">
+            <a-drawer
+                v-model:open="addTaskToGroup.open"
+                title="Add SSH Task"
+                placement="right"
+                size="large"
+                @close="()=> addTaskToGroup.open = false"
+            >
+                <div class="add-form">
+                    <div class="add-item">
+                        <span>Group:</span>
+                            <a-select
+                                style="width: 150px"
+                                v-model:value="addTaskToGroup.value"
+                            >
+                                <a-select-option v-for="item in addTaskToGroup.options" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+                            </a-select>
+                    </div>
+                    <div>
+                        <a-button @click="submitAddTask2Group" type="primary">Submit</a-button>
                     </div>
                 </div>
             </a-drawer>
