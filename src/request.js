@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { message } from 'ant-design-vue'
+import fileDownload from 'js-file-download'
 
 const BASE_URL_DEV = 'http://localhost:5173/api/'
 const BASE_URL = BASE_URL_DEV
@@ -21,6 +22,16 @@ request.interceptors.request.use((config) => {
 })
 
 request.interceptors.response.use((response) => {
+    if (response.headers['content-disposition'] && response.headers['content-disposition'].includes('attachment')) {
+        console.log('disposition:', response.headers['content-disposition'] )
+        const fileName = response.headers['content-disposition'].split(';')[1]
+            .split('=')[1]
+            .replaceAll('"','')
+        fileDownload(response.data, fileName)
+        message.success('download success')
+        return response
+    }
+
     if (response.headers['content-type'].includes('application/json')) {
         const jsonData = response.data
         // logic error
@@ -28,14 +39,10 @@ request.interceptors.response.use((response) => {
             message.error(jsonData.msg)
         }
 
-        if (Array.isArray(response.data)) {
-            return {
-                data: response.data,
-                code: 200
-            }
-        }
+        return response.data
     }
-    return response.data
+    
+    return response
 }, (err) => {
     console.log(err)
     message.error('Network Error')

@@ -1,11 +1,17 @@
 <script setup>
 import { message } from 'ant-design-vue';
-import { getSshTasks, addSshTask, deleteSshTask, getSwitchBrand } from '../api/sshTask';
+import { getSshTasks, addSshTask, deleteSshTask, getSwitchBrand, runSshTask, isDownloadFileExist, downloadCmdResult } from '../api/sshTask';
 import { ref, reactive } from 'vue';
 
 const addOpen = ref(false)
 
 const switchOptions = ref([])
+
+const downloadInfo = {
+    key: '',
+    // record wait interval id
+    waitId: ''
+}
 
 const addForm = reactive({
     "ip": "",
@@ -44,7 +50,7 @@ const tableData = ref([])
 
 async function getSshTasksData() {
     const jsonData = await getSshTasks(1, 10)
-    tableData.value = jsonData.data.map(item => {
+    tableData.value = jsonData.map(item => {
         return {
             key: item.id,
             ...item
@@ -77,7 +83,7 @@ function onSelectChange(selectedRowKeys) {
 async function openAddDrawer() {
     addOpen.value = true
     const jsonData = await getSwitchBrand()
-    switchOptions.value = jsonData.data
+    switchOptions.value = jsonData
 }
 
 async function submitSSHTask() {
@@ -96,6 +102,23 @@ async function submitSSHTask() {
         }
     )
     getSshTasksData()
+}
+
+async function runCmdAndDownload(record) {
+    const dataSent = {
+        ...record
+    }
+    delete dataSent.id
+    const downloadKey = await runSshTask(dataSent)
+    downloadInfo.key = downloadKey.id
+
+    downloadInfo.waitId = setInterval(async () => {
+        const jsonData = await isDownloadFileExist(downloadInfo.key)
+        if (jsonData.isExist) {
+            clearInterval(downloadInfo.waitId)
+            downloadCmdResult(downloadInfo.key)
+        }
+    }, 5000)
 }
 
 getSshTasksData()
@@ -119,7 +142,7 @@ getSshTasksData()
                         <span>
                             <a @click="copySshTask(record)">Copy</a>
                             <a-divider type="vertical" />
-                            <a>Run Task</a>
+                            <a @click="runCmdAndDownload(record)">Run Task</a>
                             <a-divider type="vertical" />
                             <a @click="deleteTask(record)" class="delete">Delete</a>
                         </span>

@@ -35,3 +35,26 @@ export async function getSwitchBrand() {
         method: 'get',
     })
 }
+
+export async function runSshTask(data) {
+    return request.request({
+        url: `v1/runCmd`,
+        method: 'post',
+        data
+    })
+}
+
+export async function isDownloadFileExist(id) {
+    return request.request({
+        url: `v1/fileExist/${id}`,
+        method: 'get',
+    })
+}
+
+export async function downloadCmdResult(id) {
+    return request.request({
+        url: `v1/getCmdResult/${id}`,
+        method: 'get',
+        responseType: 'blob'
+    })
+}
