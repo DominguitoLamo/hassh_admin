@@ -6,3 +6,10 @@ export async function getEchoMsg(msg) {
         method: 'get',
     })
 }
+
+export async function getSshTasks() {
+    return request.request({
+        url: `v1/sshtask`,
+        method: 'get',
+    })
+}

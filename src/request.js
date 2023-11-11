@@ -24,7 +24,7 @@ request.interceptors.response.use((response) => {
     if (response.headers['content-type'].includes('application/json')) {
         const jsonData = response.data
         // logic error
-        if (jsonData.code !== 200) {
+        if (jsonData.code && jsonData.code !== 200) {
             message.error(jsonData.msg)
         }
     }
