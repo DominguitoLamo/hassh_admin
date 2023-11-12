@@ -4,7 +4,7 @@ import fileDownload from 'js-file-download'
 
 const BASE_URL_DEV = 'http://localhost:5173/api/'
 const BASE_URL_PROD = 'http://localhost:8880/api/'
-const BASE_URL = BASE_URL_DEV
+const BASE_URL = BASE_URL_PROD
 
 export const request = axios.create(
     {
