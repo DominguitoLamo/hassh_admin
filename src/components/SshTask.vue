@@ -82,6 +82,9 @@ async function copySshTask(recordItem) {
 }
 
 async function deleteTask(record) {
+    if (!confirm('delete!?')) {
+        return
+    }
     await deleteSshTask(record.id)
     message.success('delete success')
     getSshTasksData()

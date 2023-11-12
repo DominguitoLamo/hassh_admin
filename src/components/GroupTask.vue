@@ -48,6 +48,9 @@ async function getGroupInfosData() {
 }
 
 async function deleteGroup(record) {
+    if (!confirm('delete!?')) {
+        return
+    }
     await deleteGroupInfo(record.id)
     message.success('delete group info success')
     getGroupInfosData()
