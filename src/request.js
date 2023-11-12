@@ -3,6 +3,7 @@ import { message } from 'ant-design-vue'
 import fileDownload from 'js-file-download'
 
 const BASE_URL_DEV = 'http://localhost:5173/api/'
+const BASE_URL_PROD = 'http://localhost:8880/api/'
 const BASE_URL = BASE_URL_DEV
 
 export const request = axios.create(

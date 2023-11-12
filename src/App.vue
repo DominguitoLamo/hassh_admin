@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import SshTask from '@/components/SshTask.vue'
 import GroupTask from '@/components/GroupTask.vue'
 
-const tabActiveKey = ref('single')
+const tabActiveKey = ref('group')
 const tabs = ref([
   {
     key: "single",
