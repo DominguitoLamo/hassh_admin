@@ -1,47 +1,41 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { ref } from 'vue';
+import SshTask from '@/components/SshTask.vue'
+import GroupTask from '@/components/GroupTask.vue'
+
+const tabActiveKey = ref('group')
+const tabs = ref([
+  {
+    key: "single",
+    tab: "Ssh Task"
+  }, 
+  {
+    key: "group",
+    tab: "Group Task"
+  }
+])
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="home">
+    <header>
+      <a-tabs v-model:activeKey="tabActiveKey">
+        <a-tab-pane v-for="item in tabs" :key="item.key" :tab="item.tab"></a-tab-pane>
+      </a-tabs>
+    </header>
+    <main>
+      <SshTask v-if="tabActiveKey === 'single'" />
+      <GroupTask v-if="tabActiveKey === 'group'" />
+    </main>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-}
+  .home {
+    padding: 20px;
+  }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
   header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    margin-bottom: 20px;
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
 </style>
