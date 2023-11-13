@@ -66,7 +66,7 @@ async function runGroupTasks(record) {
             clearInterval(downloadInfo.intervalKey)
             downloadGroupFile(downloadInfo.key)
         }
-    }, 3000 * record.tasks.length)
+    }, 5000)
 }
 
 getGroupInfosData()
