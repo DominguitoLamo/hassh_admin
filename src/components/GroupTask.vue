@@ -48,6 +48,9 @@ async function getGroupInfosData() {
 }
 
 async function deleteGroup(record) {
+    if (!confirm('delete!?')) {
+        return
+    }
     await deleteGroupInfo(record.id)
     message.success('delete group info success')
     getGroupInfosData()
@@ -63,7 +66,7 @@ async function runGroupTasks(record) {
             clearInterval(downloadInfo.intervalKey)
             downloadGroupFile(downloadInfo.key)
         }
-    }, 3000 * record.tasks.length)
+    }, 5000)
 }
 
 getGroupInfosData()
